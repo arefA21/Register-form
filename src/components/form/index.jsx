@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import * as Yup from "yup";
 
@@ -8,7 +8,14 @@ export const MyForm = () => {
     email: "",
     password: "",
     confirmPassword: "",
+    captcha: "",
   };
+
+  const [captcha, setCaptcha] = useState(generateCaptcha());
+
+  function generateCaptcha() {
+    return Math.floor(Math.random() * 100000);
+  }
 
   const validation = Yup.object({
     name: Yup.string().required("name is required !"),
@@ -21,10 +28,22 @@ export const MyForm = () => {
     confirmPassword: Yup.string()
       .oneOf([Yup.ref("password")], "not match !")
       .required("confirm password is required !"),
+    captcha: Yup.number()
+      .typeError("musr be number !")
+      .required("captcha is required !")
+      .test("is match", "invalid number", (value) => value === captcha),
+    /*
+      .test() method takes three arguments: 
+      first: is a string that identifies the test.
+      second: is error message to display if the test fails.
+      third:  is a function that return (true) if success and (false) if it fails.
+      */
   });
 
-  const handleSubmit = (values) => {
+  const handleSubmit = (values, { resetForm }) => {
     console.log(values);
+    resetForm();
+    setCaptcha(generateCaptcha());
   };
   return (
     <>
@@ -54,6 +73,15 @@ export const MyForm = () => {
               <label htmlFor="name">Confirm Password: </label>
               <Field type="password" name="confirmPassword" />
               <ErrorMessage name="confirmPassword" />
+            </div>
+            <div>
+              <label htmlFor="captcha">
+                {captcha}
+                <br />
+                Enter number of captcha
+              </label>
+              <Field type="number" name="captcha" />
+              <ErrorMessage name="captcha" />
             </div>
 
             <button type="submit">Register</button>
