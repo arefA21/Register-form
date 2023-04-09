@@ -1,10 +1,10 @@
-import { Form } from "./components/form"
+import { MyForm } from "./components/form"
 
 function App() {
 
   return (
     <div>
-      <Form />
+      <MyForm />
     </div>
   )
 }
